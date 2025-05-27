@@ -2,10 +2,15 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js';
 
+// Use environment variable for callback URL
+const callbackURL = process.env.NODE_ENV === "production" 
+    ? `${process.env.BACKEND_URL}/api/auth/google/callback`
+    : "/api/auth/google/callback";
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: callbackURL
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         // Check if user already exists
@@ -31,7 +36,7 @@ passport.use(new GoogleStrategy({
             fullName: profile.displayName,
             email: profile.emails[0].value,
             profilePic: profile.photos[0].value,
-            isOnboarded: false
+            isOnBoarded: false
         });
         
         await user.save();
