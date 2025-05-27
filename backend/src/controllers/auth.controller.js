@@ -209,5 +209,3 @@ export const googleCallback = async (req, res) => {
         res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
 };
-
-};
