@@ -2,7 +2,12 @@ import React from 'react';
 
 const GoogleLoginButton = ({ text = "Continue with Google" }) => {
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:5001/api/auth/google';
+        // Dynamic backend URL based on environment
+        const backendUrl = import.meta.env.PROD 
+            ? 'https://studying-with-friends.onrender.com'
+            : 'http://localhost:5001';
+            
+        window.location.href = `${backendUrl}/api/auth/google`;
     };
 
     return (

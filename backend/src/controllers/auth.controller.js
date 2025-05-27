@@ -177,25 +177,37 @@ export const googleCallback = async (req, res) => {
             console.log("Error creating/updating stream user for Google OAuth:", streamError);
         }
 
-        // Generate JWT token (use same secret as other functions)
+        // Generate JWT token
         const token = jwt.sign(
             { userId: req.user._id },
-            process.env.JWT_SECRET_KEY, // Fixed: Use JWT_SECRET_KEY to match other functions
+            process.env.JWT_SECRET_KEY,
             { expiresIn: "7d" }
         );
 
-        // Set cookie (use same name as other functions)
-        res.cookie("jwt", token, { // Fixed: Use "jwt" instead of "jwt-token"
+        // Set cookie
+        res.cookie("jwt", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             sameSite: "strict",
             secure: process.env.NODE_ENV === "production",
         });
 
+        // Dynamic redirect based on environment
+        const frontendUrl = process.env.NODE_ENV === "production" 
+            ? process.env.FRONTEND_URL || "https://studying-with-friends.onrender.com"
+            : "http://localhost:5173";
+
         // Redirect to frontend
-        res.redirect(`http://localhost:5173${req.user.isOnBoarded ? '/home' : '/onboarding'}`);
+        res.redirect(`${frontendUrl}${req.user.isOnBoarded ? '/home' : '/onboarding'}`);
     } catch (error) {
         console.error("Error in Google callback:", error);
-        res.redirect('http://localhost:5173/login?error=auth_failed');
+        
+        const frontendUrl = process.env.NODE_ENV === "production" 
+            ? process.env.FRONTEND_URL || "https://studying-with-friends.onrender.com"
+            : "http://localhost:5173";
+            
+        res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
+};
+
 };
