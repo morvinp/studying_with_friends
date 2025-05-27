@@ -21,9 +21,12 @@ router.get("/google",
 );
 
 router.get("/google/callback",
-    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }),
+    passport.authenticate('google', { 
+        failureRedirect: process.env.NODE_ENV === "production" 
+            ? `${process.env.FRONTEND_URL}/login`
+            : "http://localhost:5173/login"
+    }),
     googleCallback
 );
 
 export default router;
-
