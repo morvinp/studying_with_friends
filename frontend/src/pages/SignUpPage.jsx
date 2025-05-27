@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '../lib/axios';
 import { signup } from '../lib/api';
 import useSignup from '../hooks/useSignup';
-
+import GoogleLoginButton from '../components/GoogleLoginButton';
 const SignUpPage = () => {
   const [signupData, setSignupData] = useState({
     fullName: "",
@@ -124,7 +124,19 @@ const SignUpPage = () => {
                       </span></>
                     ) : ("Create Account")}
                   </button>
-
+                  <div className="mt-4">
+                      <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-gray-300" />
+                          </div>
+                          <div className="relative flex justify-center text-sm">
+                              <span className="px-2 bg-white text-gray-500">Or</span>
+                          </div>
+                      </div>
+                      <div className="mt-4">
+                          <GoogleLoginButton text="Login with Google" />
+                      </div>
+                  </div>
                   <div className='text-center mt-4'>
                     <p className='text-sm'>
                       Already have an account?{" "}

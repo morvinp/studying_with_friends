@@ -23,8 +23,15 @@ export async function signup(req,res){
 
         const existingUser = await User.findOne({email});
         if(existingUser){
+            // Check if user signed up with Google
+            if (existingUser.googleId) {
+                return res.status(400).json({
+                    message: "Account exists with Google. Please login with Google."
+                });
+            }
             return res.status(400).json({message:"Email already exists, please use a different one"});
         }
+        
         const idx = Math.floor(Math.random()*100)+1;
         const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`
 
@@ -46,7 +53,6 @@ export async function signup(req,res){
             console.log("Error creating stream user",error);
         }
 
-
         const token = jwt.sign({userId:newUser._id},process.env.JWT_SECRET_KEY, { expiresIn:"7d"})
 
         res.cookie("jwt",token,{
@@ -62,6 +68,7 @@ export async function signup(req,res){
         res.status(500).json({message:"Something went wrong"});
     }
 }
+
 export async function login(req,res){
     try{
         const {email, password}=req.body;
@@ -71,6 +78,13 @@ export async function login(req,res){
 
         const user = await User.findOne({email});
         if(!user) return res.status(401).json({message:"Invalid Email or password"});
+
+        // Check if user signed up with Google
+        if (user.googleId && !user.password) {
+            return res.status(400).json({
+                message: "Please login with Google"
+            });
+        }
 
         const isPasswordCorrect = await user.matchPassword(password);
         if(!isPasswordCorrect) return res.status(401).json({message: "Invalid Email or password"});
@@ -87,15 +101,15 @@ export async function login(req,res){
         res.status(200).json({success:true, user});
         
     }catch(error){
-        console.log("Error in login controller",errorr.message);
+        console.log("Error in login controller", error.message); // Fixed typo: errorr -> error
         res.status(500).json({message:"Internal Server error"});
     }
 }
+
 export function logout(req,res){
     res.clearCookie("jwt");
     res.status(200).json({success:true,message:"Logout Successful"});
 }
-
 
 export async function onboard(req, res){
     try{
@@ -105,7 +119,7 @@ export async function onboard(req, res){
 
         if(!fullName || !bio || !nativeLanguage || !learningLanguage || !location){
             return res.status(400).json({
-                message:"ALl fileds required",
+                message:"All fields required", // Fixed typo: ALl fileds -> All fields
                 missingFields:[
                     !fullName && "fullName",
                     !bio && "bio",
@@ -120,7 +134,6 @@ export async function onboard(req, res){
             ...req.body,
             isOnBoarded: true,
         },{new:true})
-
 
         if(!updatedUser){
             return res.status(400).json({message: "User not found"});
@@ -144,53 +157,45 @@ export async function onboard(req, res){
     }
 }
 
-// export async function onboard(req, res){
-//   try {
-//     const userId = req.user._id;
-//     const { fullName, bio, nativeLanguage, learningLanguage, location, profilePic } = req.body;
+// Google OAuth Controllers
+export const googleAuth = (req, res, next) => {
+    // This will be handled by passport middleware in routes
+    // No need for implementation here
+};
 
-//     if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
-//       return res.status(400).json({
-//         message: "All fields required",
-//         missingFields: [
-//           !fullName && "fullName",
-//           !bio && "bio",
-//           !nativeLanguage && "nativeLanguage",
-//           !learningLanguage && "learningLanguage",
-//           !location && "location",
-//         ].filter(Boolean),
-//       });
-//     }
+export const googleCallback = async (req, res) => {
+    try {
+        // Create/update Stream user for Google OAuth users
+        try {
+            await upsertStreamUser({
+                id: req.user._id.toString(),
+                name: req.user.fullName,
+                image: req.user.profilePic || "",
+            });
+            console.log(`Stream user created/updated for Google user ${req.user.fullName}`);
+        } catch(streamError) {
+            console.log("Error creating/updating stream user for Google OAuth:", streamError);
+        }
 
-//     const updatedUser = await User.findByIdAndUpdate(userId, {
-//       fullName,
-//       bio,
-//       nativeLanguage,
-//       learningLanguage,
-//       location,
-//       profilePic,
-//       isOnboarded: true,
-//     }, { new: true });
+        // Generate JWT token (use same secret as other functions)
+        const token = jwt.sign(
+            { userId: req.user._id },
+            process.env.JWT_SECRET_KEY, // Fixed: Use JWT_SECRET_KEY to match other functions
+            { expiresIn: "7d" }
+        );
 
-//     if (!updatedUser) {
-//       return res.status(400).json({ message: "User not found" });
-//     }
+        // Set cookie (use same name as other functions)
+        res.cookie("jwt", token, { // Fixed: Use "jwt" instead of "jwt-token"
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+        });
 
-//     try {
-//       await upsertStreamUser({
-//         id: updatedUser._id.toString(),
-//         name: updatedUser.fullName,
-//         image: updatedUser.profilePic || "",
-//       });
-//       console.log(`Stream user updated after onboarding for ${updatedUser.fullName}`);
-//     } catch (error) {
-//       console.log("Error updating Stream user during onboarding:", error.message);
-//     }
-
-//     res.status(200).json({ success: true, user: updatedUser });
-
-//   } catch (error) {
-//     console.error("Onboarding error:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// }
+        // Redirect to frontend
+        res.redirect(`http://localhost:5173${req.user.isOnBoarded ? '/home' : '/onboarding'}`);
+    } catch (error) {
+        console.error("Error in Google callback:", error);
+        res.redirect('http://localhost:5173/login?error=auth_failed');
+    }
+};

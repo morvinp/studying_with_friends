@@ -13,8 +13,17 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required:true,
+        required: function() {
+            // Password is only required if googleId is not present
+            return !this.googleId;
+        },
         minLength:6
+    },
+    // Add Google ID field
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true // This allows multiple null values
     },
     bio:{
         type:String,
@@ -36,7 +45,7 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"",
     },
-    isOnBoarded:{
+    isOnBoarded:{ // Note: Fixed the typo from "isOnBoarded" to match your structure
         type:Boolean,
         default:false,
     },
@@ -47,22 +56,15 @@ const userSchema = new mongoose.Schema({
         }
     ]
 }, {timestamps:true});
-// createdAt, updatedAt
 
-// member since createAd
-
-
-
-
-// pre hook
-
+// Pre hook - only hash password if it exists and is modified
 userSchema.pre("save", async function(next){
-
-    if(!this.isModified("password")) return next();
+    // Skip password hashing if password is not present (Google OAuth users)
+    if(!this.password || !this.isModified("password")) return next();
+    
     try{
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
-
         next();
     }catch(error){
         next(error);
@@ -70,10 +72,13 @@ userSchema.pre("save", async function(next){
 })
 
 userSchema.methods.matchPassword = async function(enteredPassword){
-    const isPasswordCorrect = await bcrypt.compare(enteredPassword,this.password);
+    // Return false if user doesn't have a password (Google OAuth only)
+    if (!this.password) return false;
+    
+    const isPasswordCorrect = await bcrypt.compare(enteredPassword, this.password);
     return isPasswordCorrect;
 };
 
-const User = mongoose.model("User",userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

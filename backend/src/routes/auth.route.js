@@ -1,18 +1,29 @@
 import express from "express";
-import { login, logout, onboard, signup } from "../controllers/auth.controller.js";
+import passport from "passport";
+import jwt from "jsonwebtoken";
+import { googleCallback, login, logout, onboard, signup } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router()
 
-router.post("/signup",signup);
+// Existing routes
+router.post("/signup", signup);
+router.post("/login", login);
+router.post("/logout", logout);
+router.post("/onboarding", protectRoute, onboard);
+router.get("/me", protectRoute, (req, res) => {
+    res.status(200).json({ success: true, user: req.user });
+});
 
-router.post("/login",login);
+// Google OAuth routes
+router.get("/google", 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
-router.post("/logout",logout);
+router.get("/google/callback",
+    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }),
+    googleCallback
+);
 
-router.post("/onboarding",protectRoute,onboard);
+export default router;
 
-router.get("/me",protectRoute, (req,res)=>{
-    res.status(200).json({success:true,user:req.user});
-}); 
-export default router

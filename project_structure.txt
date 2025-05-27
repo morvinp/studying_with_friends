@@ -1,0 +1,88 @@
+📁 video conferencing
+-> package-lock.json
+-> package.json
+-> project_structure.json
+-> project_structure.txt
+-> project_tree.py
+│   📁 backend
+│   -> package-lock.json
+│   -> package.json
+│   │   📁 src
+│   │   -> server.js
+│   │   │   📁 controllers
+│   │   │   -> auth.controller.js
+│   │   │   -> chat.controller.js
+│   │   │   -> user.controller.js
+│   │   │   📁 lib
+│   │   │   -> db.js
+│   │   │   -> stream.js
+│   │   │   📁 middleware
+│   │   │   -> auth.middleware.js
+│   │   │   📁 models
+│   │   │   -> FriendRequest.js
+│   │   │   -> User.js
+│   │   │   📁 routes
+│   │   │   -> auth.route.js
+│   │   │   -> chat.route.js
+│   │   │   -> user.route.js
+│   📁 frontend
+│   -> eslint.config.js
+│   -> index.html
+│   -> package-lock.json
+│   -> package.json
+│   -> postcss.config.js
+│   -> README.md
+│   -> tailwind.config.js
+│   -> vite.config.js
+│   │   📁 dist
+│   │   -> i.png
+│   │   -> index.html
+│   │   -> vite.svg
+│   │   │   📁 assets
+│   │   │   -> index-CNEY68Mg.js
+│   │   │   -> index-CPi3V3SG.css
+│   │   │   -> latency-chart-Bj5OSYzg.es--hmeMTsc.js
+│   │   │   -> mml-react.esm-DpjgzPJZ.js
+│   │   │   -> stream-chat-icons-BLRMizsT.woff
+│   │   │   -> stream-chat-icons-CVCe0Jge.eot
+│   │   │   -> stream-chat-icons-C_tSEO3S.ttf
+│   │   │   -> stream-chat-icons-DWRBO47D.svg
+│   │   📁 public
+│   │   -> i.png
+│   │   -> vite.svg
+│   │   📁 src
+│   │   -> App.jsx
+│   │   -> index.css
+│   │   -> main.jsx
+│   │   │   📁 components
+│   │   │   -> CallButton.jsx
+│   │   │   -> ChatLoader.jsx
+│   │   │   -> FriendCard.jsx
+│   │   │   -> Layout.jsx
+│   │   │   -> Navbar.jsx
+│   │   │   -> NoFriendsFound.jsx
+│   │   │   -> NoNotificationsFound.jsx
+│   │   │   -> PageLoader.jsx
+│   │   │   -> Sidebar.jsx
+│   │   │   -> ThemeSelector.jsx
+│   │   │   📁 constants
+│   │   │   -> index.js
+│   │   │   📁 hooks
+│   │   │   -> useAuthUser.js
+│   │   │   -> useLogin.js
+│   │   │   -> useLogout.js
+│   │   │   -> useSignup.js
+│   │   │   📁 lib
+│   │   │   -> api.js
+│   │   │   -> axios.js
+│   │   │   -> utils.js
+│   │   │   📁 pages
+│   │   │   -> CallPage.jsx
+│   │   │   -> ChatPage.jsx
+│   │   │   -> HomePage.jsx
+│   │   │   -> LoginPage.jsx
+│   │   │   -> NotificationsPage.jsx
+│   │   │   -> OnboardingPage.jsx
+│   │   │   -> SignUpPage.jsx
+│   │   │   📁 store
+│   │   │   -> useThemeStore.js

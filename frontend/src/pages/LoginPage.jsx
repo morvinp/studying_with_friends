@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { login } from '../lib/api';
 import { Link } from 'react-router';
 import useLogin from '../hooks/useLogin';
-
+import GoogleLoginButton from '../components/GoogleLoginButton';
 const LoginPage = () => {
   const [loginData, setLoginData]=useState({
     email:"",
@@ -92,7 +92,19 @@ const LoginPage = () => {
                     "Sign In"
                   )}
                 </button>
-
+                <div className="mt-4">
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white text-gray-500">Or</span>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <GoogleLoginButton text="Login with Google" />
+                    </div>
+                </div>
                 <div className="text-center mt-4">
                   <p className="text-sm">
                     Don't have an account?{" "}
