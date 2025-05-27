@@ -1,14 +1,12 @@
 {
-  "dependencies": {
-    "@tanstack/react-query": "^5.76.1",
-    "connect-mongo": "^5.1.0"
-  },
   "name": "video-conferencing",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-    "start": "npm run start --prefix backend"
+    "build": "cd backend && npm ci && cd ../frontend && npm ci && npm run build",
+    "start": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
   },
   "keywords": [],
   "author": "",
