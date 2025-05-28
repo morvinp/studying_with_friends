@@ -14,11 +14,11 @@ import {
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
     <QueryClientProvider client = {queryClient}>
       <App />
     </QueryClientProvider>
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 )

@@ -198,7 +198,7 @@ export const googleCallback = async (req, res) => {
             : "http://localhost:5173";
 
         // Redirect to frontend
-        res.redirect(`${frontendUrl}${req.user.isOnBoarded ? '/home' : '/onboarding'}`);
+        res.redirect(`${frontendUrl}${req.user.isOnBoarded ? '/' : '/onboarding'}`);
     } catch (error) {
         console.error("Error in Google callback:", error);
         

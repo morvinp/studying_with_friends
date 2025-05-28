@@ -12,18 +12,23 @@
 │   │   │   📁 controllers
 │   │   │   -> auth.controller.js
 │   │   │   -> chat.controller.js
+│   │   │   -> group.controller.js
 │   │   │   -> user.controller.js
 │   │   │   📁 lib
 │   │   │   -> db.js
+│   │   │   -> passport.js
 │   │   │   -> stream.js
 │   │   │   📁 middleware
 │   │   │   -> auth.middleware.js
 │   │   │   📁 models
 │   │   │   -> FriendRequest.js
+│   │   │   -> Group.js
 │   │   │   -> User.js
 │   │   │   📁 routes
 │   │   │   -> auth.route.js
 │   │   │   -> chat.route.js
+│   │   │   -> group.route.js
+│   │   │   -> oauth.route.js
 │   │   │   -> user.route.js
 │   📁 frontend
 │   -> eslint.config.js
@@ -39,10 +44,10 @@
 │   │   -> index.html
 │   │   -> vite.svg
 │   │   │   📁 assets
-│   │   │   -> index-CNEY68Mg.js
-│   │   │   -> index-CPi3V3SG.css
-│   │   │   -> latency-chart-Bj5OSYzg.es--hmeMTsc.js
-│   │   │   -> mml-react.esm-DpjgzPJZ.js
+│   │   │   -> index-DDTwYcx0.js
+│   │   │   -> index-TFdPXumF.css
+│   │   │   -> latency-chart-Bj5OSYzg.es-aBrGSYKy.js
+│   │   │   -> mml-react.esm-CXavGSEp.js
 │   │   │   -> stream-chat-icons-BLRMizsT.woff
 │   │   │   -> stream-chat-icons-CVCe0Jge.eot
 │   │   │   -> stream-chat-icons-C_tSEO3S.ttf
@@ -58,10 +63,12 @@
 │   │   │   -> CallButton.jsx
 │   │   │   -> ChatLoader.jsx
 │   │   │   -> FriendCard.jsx
+│   │   │   -> GoogleLoginButton.jsx
 │   │   │   -> Layout.jsx
 │   │   │   -> Navbar.jsx
 │   │   │   -> NoFriendsFound.jsx
 │   │   │   -> NoNotificationsFound.jsx
+│   │   │   -> OAuthButtons.jsx
 │   │   │   -> PageLoader.jsx
 │   │   │   -> Sidebar.jsx
 │   │   │   -> ThemeSelector.jsx
@@ -79,9 +86,11 @@
 │   │   │   📁 pages
 │   │   │   -> CallPage.jsx
 │   │   │   -> ChatPage.jsx
+│   │   │   -> GroupsPage.jsx
 │   │   │   -> HomePage.jsx
 │   │   │   -> LoginPage.jsx
 │   │   │   -> NotificationsPage.jsx
+│   │   │   -> OAuthCallbackPage.jsx
 │   │   │   -> OnboardingPage.jsx
 │   │   │   -> SignUpPage.jsx
 │   │   │   📁 store

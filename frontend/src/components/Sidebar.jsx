@@ -1,7 +1,7 @@
 import React from 'react'
 import useAuthUser from '../hooks/useAuthUser'
 import { Link, useLocation } from 'react-router'
-import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon } from 'lucide-react'
+import { BellIcon, HomeIcon, ShipWheelIcon, Users2Icon, UsersIcon } from 'lucide-react'
 
 const Sidebar = () => {
     const {authUser}=useAuthUser()
@@ -49,6 +49,16 @@ const Sidebar = () => {
             <BellIcon className="size-5 text-base-content opacity-70" />
             <span>Notifications</span>
             </Link>
+            <Link 
+            to="/groups" 
+            className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
+                currentPath === "/groups" ? "btn-active" : ""
+            }`}
+            >
+            <Users2Icon className="size-6" />
+            <span>Groups</span>
+        </Link>
+
         </nav>
 
         {/* USER PROFILE SECTION */}

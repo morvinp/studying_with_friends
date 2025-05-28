@@ -17,6 +17,7 @@ import useAuthUser from './hooks/useAuthUser.js'
 import { Home } from 'lucide-react'
 import Layout from './components/Layout.jsx'
 import { useThemeStore } from './store/useThemeStore.js'
+import GroupsPage from './pages/GroupsPage.jsx'
 
 const App = () => {
   // tanstack query crash course
@@ -51,6 +52,15 @@ const App = () => {
         element={isAuthenticated && isOnBoarded?(
           <Layout showSidebar>
             <NotificationsPage/>
+          </Layout>
+        ):(
+          <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+        )}
+        />
+        <Route path="/groups" 
+        element={isAuthenticated && isOnBoarded?(
+          <Layout showSidebar>
+            <GroupsPage/>
           </Layout>
         ):(
           <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
