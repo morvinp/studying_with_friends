@@ -18,10 +18,11 @@ import { Home } from 'lucide-react'
 import Layout from './components/Layout.jsx'
 import { useThemeStore } from './store/useThemeStore.js'
 import GroupsPage from './pages/GroupsPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
+import { SocketProvider } from './context/SocketContext.jsx' // Add this import
 
 const App = () => {
   // tanstack query crash course
-
 
   const {isLoading,authUser} = useAuthUser();
   const {theme} = useThemeStore();
@@ -37,66 +38,80 @@ const App = () => {
 
   return (
     <div className="h-screen" data-theme={theme}>
-      {/* <button className='btn' onClick={()=>toast.success("Hello World!")}>Create a toast</button> */}
-      <Routes>
-        <Route path="/" element={isAuthenticated && isOnBoarded ? (
-          <Layout showSidebar={true}>
-            <HomePage/>
-          </Layout>
-        ): (
-          <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-        )}/>
-        <Route path="/signup" element={!isAuthenticated ? <SignUpPage/>: <Navigate to={isOnBoarded ? "/" : "/onboarding"}/>}/>
-        <Route path="/login" element={!isAuthenticated ?<LoginPage/>: <Navigate to={isOnBoarded ? "/" : "/onboarding"}/>}/>
-        <Route path="/notifications" 
-        element={isAuthenticated && isOnBoarded?(
-          <Layout showSidebar>
-            <NotificationsPage/>
-          </Layout>
-        ):(
-          <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
-        )}
-        />
-        <Route path="/groups" 
-        element={isAuthenticated && isOnBoarded?(
-          <Layout showSidebar>
-            <GroupsPage/>
-          </Layout>
-        ):(
-          <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
-        )}
-        />
-        <Route 
-          path="/call/:id" 
-          element={
-            isAuthenticated && isOnBoarded ? (
-              <CallPage />
-            ) : (
-              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
-            )
-          } 
-        />
-        <Route path="/chat/:id" 
-        element={isAuthenticated && isOnBoarded?(
-          <Layout showSidebar={false}>
-            <ChatPage/>
-          </Layout>
-        ):(
-          <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
-        )}
-/>
-        <Route path="/onboarding" 
-          element={isAuthenticated ? (
-            !isOnBoarded ?(
-              <OnboardingPage/>
-            ):(
-              <Navigate to="/"/>
-            )
-          ) : (
-            <Navigate to="/login"/>
+      <SocketProvider> {/* Wrap everything in SocketProvider */}
+        {/* <button className='btn' onClick={()=>toast.success("Hello World!")}>Create a toast</button> */}
+        <Routes>
+          <Route path="/" element={isAuthenticated && isOnBoarded ? (
+            <Layout showSidebar={true}>
+              <HomePage/>
+            </Layout>
+          ): (
+            <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
           )}/>
-      </Routes>
-      <Toaster/>
+          <Route path="/signup" element={!isAuthenticated ? <SignUpPage/>: <Navigate to={isOnBoarded ? "/" : "/onboarding"}/>}/>
+          <Route path="/login" element={!isAuthenticated ?<LoginPage/>: <Navigate to={isOnBoarded ? "/" : "/onboarding"}/>}/>
+          
+          {/* Profile Page Route */}
+          <Route path="/profile" 
+          element={isAuthenticated && isOnBoarded?(
+            <Layout showSidebar>
+              <ProfilePage/>
+            </Layout>
+          ):(
+            <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+          )}
+          />
+          
+          <Route path="/notifications" 
+          element={isAuthenticated && isOnBoarded?(
+            <Layout showSidebar>
+              <NotificationsPage/>
+            </Layout>
+          ):(
+            <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+          )}
+          />
+          <Route path="/groups" 
+          element={isAuthenticated && isOnBoarded?(
+            <Layout showSidebar>
+              <GroupsPage/>
+            </Layout>
+          ):(
+            <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+          )}
+          />
+          <Route 
+            path="/call/:id" 
+            element={
+              isAuthenticated && isOnBoarded ? (
+                <CallPage />
+              ) : (
+                <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
+              )
+            } 
+          />
+          <Route path="/chat/:id" 
+          element={isAuthenticated && isOnBoarded?(
+            <Layout showSidebar={false}>
+              <ChatPage/>
+            </Layout>
+          ):(
+            <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+          )}
+  />
+          <Route path="/onboarding" 
+            element={isAuthenticated ? (
+              !isOnBoarded ?(
+                <OnboardingPage/>
+              ):(
+                <Navigate to="/"/>
+              )
+            ) : (
+              <Navigate to="/login"/>
+            )}/>
+        </Routes>
+        <Toaster/>
+      </SocketProvider> {/* Close SocketProvider */}
     </div>
   )
 }

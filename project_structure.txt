@@ -61,6 +61,7 @@
 │   │   -> main.jsx
 │   │   │   📁 components
 │   │   │   -> CallButton.jsx
+│   │   │   -> CallContent.jsx
 │   │   │   -> ChatLoader.jsx
 │   │   │   -> FriendCard.jsx
 │   │   │   -> GoogleLoginButton.jsx
@@ -92,6 +93,7 @@
 │   │   │   -> NotificationsPage.jsx
 │   │   │   -> OAuthCallbackPage.jsx
 │   │   │   -> OnboardingPage.jsx
+│   │   │   -> ProfilePage.jsx
 │   │   │   -> SignUpPage.jsx
 │   │   │   📁 store
 │   │   │   -> useThemeStore.js

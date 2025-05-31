@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import useAuthUser from '../hooks/useAuthUser'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { completeOnboarding } from '../lib/api';
-import { CameraIcon, LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon} from "lucide-react";
+import { CameraIcon, LoaderIcon, ShipWheelIcon, ShuffleIcon, XIcon, PlusIcon } from "lucide-react";
 import { toast } from 'react-hot-toast';
-import { LANGUAGES } from '../constants';
+import { TECHNOLOGIES } from '../constants';
 
 const OnboardingPage = () => {
   const {authUser} = useAuthUser();
@@ -13,11 +13,11 @@ const OnboardingPage = () => {
   const [formState, setFormState] = useState({
     fullName: authUser?.fullName || "",
     bio: authUser?.bio || "",
-    nativeLanguage: authUser?.nativeLanguage || "",
-    learningLanguage: authUser?.learningLanguage || "",
-    location: authUser?.location || "",
+    technologies: authUser?.technologies || [],
     profilePic: authUser?.profilePic || "",
   });
+
+  const [selectedTech, setSelectedTech] = useState("");
 
   const { mutate: onboardingMutation, isPending } = useMutation({
     mutationFn: completeOnboarding,
@@ -25,7 +25,6 @@ const OnboardingPage = () => {
       toast.success("Profile onboarded successfully");
       queryClient.invalidateQueries({queryKey:["authUser"]}); 
     },
-
     onError: (error)=>{
       toast.error(error.response.data.message);
       console.log(error);
@@ -34,16 +33,58 @@ const OnboardingPage = () => {
 
   const handleSubmit = (e)=>{
     e.preventDefault();
+    
+    if (!formState.fullName.trim()) {
+      toast.error("Full name is required");
+      return;
+    }
+    
+    if (formState.technologies.length === 0) {
+      toast.error("Please select at least one technology");
+      return;
+    }
+    
     onboardingMutation(formState);
   }
 
   const handleRandomAvatar = ()=>{
     const idx = Math.floor(Math.random()*100 )+1;
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
-
     setFormState({ ...formState, profilePic: randomAvatar});
     toast.success("Random Profile pic generated");
   }
+
+  const addTechnology = () => {
+    if (!selectedTech) {
+      toast.error("Please select a technology");
+      return;
+    }
+    
+    if (formState.technologies.includes(selectedTech)) {
+      toast.error("Technology already added");
+      return;
+    }
+    
+    if (formState.technologies.length >= 5) {
+      toast.error("Maximum 5 technologies allowed");
+      return;
+    }
+
+    setFormState({
+      ...formState,
+      technologies: [...formState.technologies, selectedTech]
+    });
+    setSelectedTech("");
+    toast.success("Technology added");
+  };
+
+  const removeTechnology = (techToRemove) => {
+    setFormState({
+      ...formState,
+      technologies: formState.technologies.filter(tech => tech !== techToRemove)
+    });
+    toast.success("Technology removed");
+  };
 
   return (
     <div className='min-h-screen bg-base-100 flex items-center justify-center p-4'>
@@ -54,7 +95,6 @@ const OnboardingPage = () => {
           <form onSubmit={handleSubmit} className='space-y-6'>
             {/* PROFILE PIC CONTAINER */}
             <div className='flex flex-col items-center justify-center space-y-4'>
-              {/* IMAGE PREVIEW */}
               <div className="size-32 rounded-full bg-base-300 overflow-hidden">
                 {formState.profilePic ? (
                   <img
@@ -75,116 +115,119 @@ const OnboardingPage = () => {
                   Generate Random Avatar
                 </button>
               </div>
-
-
             </div>
-               {/* FULL NAME */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Full Name</span>
-                </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formState.fullName}
-                  onChange={(e) => setFormState({ ...formState, fullName: e.target.value })}
-                  className="input input-bordered w-full"
-                  placeholder="Your full name"
-                />
-              </div>
 
-              {/* BIO */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Bio</span>
-                </label>
-                <textarea
-                  name="bio"
-                  value={formState.bio}
-                  onChange={(e) => setFormState({ ...formState, bio: e.target.value })}
-                  className="textarea textarea-bordered h-24"
-                  placeholder="Tell others about yourself and your language learning goals"
-                />
-              </div>
+            {/* FULL NAME */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Full Name <span className="text-error">*</span></span>
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={formState.fullName}
+                onChange={(e) => setFormState({ ...formState, fullName: e.target.value })}
+                className="input input-bordered w-full"
+                placeholder="Your full name"
+                required
+              />
+            </div>
 
-              {/* Languages */}
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {/* NATIVE LANGUAGE */}
-                <div className='form-control'>
-                  <label className='label'>
-                    <span className='label-text'>Native Language</span>
-                  </label>
-                  <select
-                    name="nativeLanguage"
-                    value={formState.nativeLanguage}
-                    onChange={(e) => setFormState({ ...formState, nativeLanguage: e.target.value })}
-                    className="select select-bordered w-full"
-                  >
-                    <option value="">Select your native language</option>
-                    {LANGUAGES.map((lang) => (
-                      <option key={`native-${lang}`} value={lang.toLowerCase()}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            {/* BIO */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Bio</span>
+              </label>
+              <textarea
+                name="bio"
+                value={formState.bio}
+                onChange={(e) => setFormState({ ...formState, bio: e.target.value })}
+                className="textarea textarea-bordered h-24"
+                placeholder="Tell others about yourself, your projects, and your learning goals"
+              />
+            </div>
 
-                {/* Learning Language */}
-                <div className='form-control'>
-                  <label className='label'>
-                    <span className='label-text'>Learning Language</span>
-                  </label>
-                  <select
-                    name="learningLanguage"
-                    value={formState.learningLanguage}
-                    onChange={(e) => setFormState({ ...formState, learningLanguage: e.target.value })}
-                    className="select select-bordered w-full"
-                  >
-                    <option value="">Select your learning language</option>
-                    {LANGUAGES.map((lang) => (
-                      <option key={`native-${lang}`} value={lang.toLowerCase()}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Location</span>
-                </label>
-                <div className="relative">
-                  <MapPinIcon className="absolute top-1/2 transform -translate-y-1/2 left-3 size-5 text-base-content opacity-70" />
-                  <input
-                    type="text"
-                    name="location"
-                    value={formState.location}
-                    onChange={(e) => setFormState({ ...formState, location: e.target.value })}
-                    className="input input-bordered w-full pl-10"
-                    placeholder="City, Country"
-                  />
-                </div>
-              </div>
+            {/* TECHNOLOGIES SECTION */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">
+                  Technologies <span className="text-error">*</span>
+                  <span className="text-sm text-base-content opacity-70 ml-2">
+                    (Select 1-5 technologies you use or want to learn)
+                  </span>
+                </span>
+              </label>
               
-              {/* SUBMIT BUTTON */}
-              <button className='btn btn-primary w-full' disabled={isPending} type='submit'>
-                {!isPending ? (
-                  <>
-                  <ShipWheelIcon className='size-5 mr-2'/>
-                  Complete Onboarding
-                  </>
-                ) : (
-                  <>
-                  <LoaderIcon className='animate-spin size-5 mr-2'/>
-                  Onboarding...
-                  </>
-                )}
-              </button>
+              <div className="flex gap-2 mb-3">
+                <select
+                  value={selectedTech}
+                  onChange={(e) => setSelectedTech(e.target.value)}
+                  className="select select-bordered flex-1"
+                  disabled={formState.technologies.length >= 5}
+                >
+                  <option value="">Select a technology</option>
+                  {TECHNOLOGIES.filter(tech => !formState.technologies.includes(tech.toLowerCase())).map((tech) => (
+                    <option key={tech} value={tech.toLowerCase()}>
+                      {tech}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={addTechnology}
+                  disabled={!selectedTech || formState.technologies.length >= 5}
+                  className="btn btn-primary"
+                >
+                  <PlusIcon className="size-4" />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {formState.technologies.map((tech, index) => (
+                  <div
+                    key={index}
+                    className="badge badge-primary gap-2 p-3 text-sm"
+                  >
+                    {tech.charAt(0).toUpperCase() + tech.slice(1)}
+                    <button
+                      type="button"
+                      onClick={() => removeTechnology(tech)}
+                      className="btn btn-ghost btn-xs p-0 hover:bg-transparent"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {formState.technologies.length === 0 && (
+                <p className="text-sm text-base-content opacity-60 mt-2">
+                  No technologies selected yet. Please add at least one.
+                </p>
+              )}
+
+              {formState.technologies.length >= 5 && (
+                <p className="text-sm text-warning mt-2">
+                  Maximum limit reached (5 technologies)
+                </p>
+              )}
+            </div>
+            
+            <button className='btn btn-primary w-full' disabled={isPending} type='submit'>
+              {!isPending ? (
+                <>
+                <ShipWheelIcon className='size-5 mr-2'/>
+                Complete Onboarding
+                </>
+              ) : (
+                <>
+                <LoaderIcon className='animate-spin size-5 mr-2'/>
+                Onboarding...
+                </>
+              )}
+            </button>
           </form>
         </div>
-
       </div>
     </div>
   )

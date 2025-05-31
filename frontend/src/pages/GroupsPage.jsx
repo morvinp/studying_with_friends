@@ -194,7 +194,8 @@ const GroupsPage = () => {
                           )}
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span>{group.members.length} members</span>
-                            <span>Created by {group.creator.fullName}</span>
+                            <span>Created by {group.creator?.fullName || "Unknown"}</span>
+                            {/* <span>Created by {"Unknown"}</span> */}
                           </div>
                         </div>
                         <button

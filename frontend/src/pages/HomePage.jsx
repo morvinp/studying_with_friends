@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { getOutgoingFriendReqs, getRecommendedUsers, getUserFriends, sendFriendRequest } from '../lib/api';
 import { Link } from 'react-router';
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
-import FriendCard, { getLanguageFlag } from '../components/FriendCard';
+import FriendCard, { getTechIcon } from '../components/FriendCard'; // Changed import
 import NoFriendsFound from '../components/NoFriendsFound';
 import { capitalize } from '../lib/utils';
 
@@ -69,9 +69,9 @@ const HomePage = () => {
           <div className="mb-6 sm:mb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Meet New Learners</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Meet New Developers</h2>
                 <p className="opacity-70">
-                  Discover perfect language exchange partners based on your profile
+                  Discover developers with similar tech interests and collaborate on projects
                 </p>
               </div>
             </div>
@@ -85,7 +85,7 @@ const HomePage = () => {
             <div className="card bg-base-200 p-6 text-center">
               <h3 className="font-semibold text-lg mb-2">No recommendations available</h3>
               <p className="text-base-content opacity-70">
-                Check back later for new language partners!
+                Check back later for new developer connections!
               </p>
             </div>
           ):(
@@ -94,37 +94,42 @@ const HomePage = () => {
                 const hasRequestBeenSent = outgoingRequestIds.has(user._id);
 
                 return(
-
                   <div key={user._id}
                   className='card bg-base-200 hover:shadow-lg transition-all duration-300'>
                     <div className='card-body p-5 space-y-4'>
                       <div className="flex items-center gap-3">
                         <div className="avatar size-16 rounded-full">
-                          <img src={user.profilePic} alt={user.fullName} />
+                          <img 
+                            src={user.profilePic} 
+                            alt={user.fullName}
+                            onError={(e) => {
+                              e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                            }}
+                          />
                         </div>
 
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-semibold text-lg">{user.fullName}</h3>
-                          {user.location && (
-                            <div className="flex items-center text-xs opacity-70 mt-1">
-                              <MapPinIcon className="size-3 mr-1" />
-                              {user.location}
-                            </div>
-                          )}
+                          {/* Remove location display since we removed it from the model */}
                         </div>
                       </div>
 
-                      {/* Languages with flags */}
+                      {/* Technologies with icons */}
                       <div className="flex flex-wrap gap-1.5">
-                        <span className="badge badge-secondary">
-                          {getLanguageFlag(user.nativeLanguage)}
-                          Native: {capitalize(user.nativeLanguage)}
-                        </span>
-                        <span className="badge badge-outline">
-                          {getLanguageFlag(user.learningLanguage)}
-                          Learning: {capitalize(user.learningLanguage)}
-                        </span>
+                        {user.technologies && user.technologies.length > 0 ? (
+                          user.technologies.map((tech, index) => (
+                            <span key={index} className="badge badge-primary text-xs">
+                              {getTechIcon(tech)}
+                              {capitalize(tech)}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="badge badge-ghost text-xs">
+                            No technologies listed
+                          </span>
+                        )}
                       </div>
+
                       {user.bio && <p className='text-sm opacity-70'>{user.bio}</p>}
 
                       {/* Action button */}
@@ -147,17 +152,14 @@ const HomePage = () => {
                           </>
                         )}
                       </button>
-
                     </div>
                   </div>
                 )
               })}
-
             </div>
           )}
         </section>
       </div>
-      
     </div>
   )
 }

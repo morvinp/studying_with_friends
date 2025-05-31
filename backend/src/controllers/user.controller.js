@@ -16,14 +16,16 @@ export async function getRecommendedUsers(req, res){
         res.status(200).json(recommendedUsers)
     }catch(error){
         console.error("error in getRecommendedUsers controller",error.message);
-
         res.status(500).json({message:"Internal Server Error"});
     }
 }
 
+// Updated function with correct fields
 export async function getMyFriends(req,res){
     try{
-        const user = await User.findById(req.user.id).select("friends").populate("friends","fullName profilePic nativeLanguage learningLanguage");
+        const user = await User.findById(req.user.id)
+            .select("friends")
+            .populate("friends","fullName profilePic bio technologies");
 
         res.status(200).json(user.friends);
     }catch(error){
@@ -38,7 +40,6 @@ export async function sendFriendRequest(req,res){
         const { id:recipientId }=req.params
 
         // prevent sending requests to yourself
-
         if(myId===recipientId){
             return res.status(400).json({message:"You can't send friend request to yourself"});
         }
@@ -52,7 +53,6 @@ export async function sendFriendRequest(req,res){
         }
 
         // check if a req already exists
-
         const existingRequest=await FriendRequest.findOne({
             $or:[
                 {sender:myId, recipient:recipientId},
@@ -109,18 +109,18 @@ export async function acceptFriendRequest(req,res){
     }
 }
 
+// Also update these functions to use new field names
 export async function getFriendRequests(req,res){
     try{
         const incomingReqs = await FriendRequest.find({
             recipient:req.user.id,
             status:"pending",
-        }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
-
+        }).populate("sender", "fullName profilePic bio technologies");
 
         const acceptedReqs = await FriendRequest.find({
             sender: req.user.id,
             status:"accepted",
-        }).populate("recipient", "fullName profilePic");
+        }).populate("recipient", "fullName profilePic bio technologies");
 
         res.status(200).json({incomingReqs, acceptedReqs});
     }catch(error){
@@ -134,11 +134,28 @@ export async function getOutgoingFriendReqs(req,res){
         const outgoingRequests = await FriendRequest.find({
             sender:req.user.id,
             status:"pending",
-        }).populate("recipient","fullName profilePic nativeLanguage learningLanguage");
+        }).populate("recipient","fullName profilePic bio technologies");
 
         res.status(200).json(outgoingRequests);
     }catch(error){
         console.log("error in getOutgoingFriendReqs controller",error.message);
         res.status(500).json({message:"Internal Server Error"});
     }
+}
+
+export async function getUserById(req, res) {
+  try {
+    const { id } = req.params;
+    
+    const user = await User.findById(id).select('fullName profilePic bio technologies');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error in getUserById controller', error.message);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 }

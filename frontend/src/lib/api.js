@@ -90,3 +90,36 @@ export async function leaveGroup(groupId) {
     const response = await axiosInstance.delete(`/groups/${groupId}/leave`);
     return response.data;
 }
+
+
+// Add this function
+export const getSocketToken = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/socket-token");
+    return response.data;
+  } catch (error) {
+    console.log("error in getSocketToken", error);
+    return null;
+  }
+};
+// Add this function
+export const getChatMessages = async (chatId, page = 1, limit = 50) => {
+  try {
+    const response = await axiosInstance.get(`/messages/${chatId}?page=${page}&limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    console.log("error in getChatMessages", error);
+    return { messages: [], hasMore: false };
+  }
+};
+
+// Add this function to get user details
+export const getUserById = async (userId) => {
+  try {
+    const response = await axiosInstance.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.log("error in getUserById", error);
+    return null;
+  }
+};

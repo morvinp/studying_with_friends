@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
@@ -14,16 +14,14 @@ const userSchema = new mongoose.Schema({
     password:{
         type:String,
         required: function() {
-            // Password is only required if googleId is not present
             return !this.googleId;
         },
         minLength:6
     },
-    // Add Google ID field
     googleId: {
         type: String,
         unique: true,
-        sparse: true // This allows multiple null values
+        sparse: true
     },
     bio:{
         type:String,
@@ -33,19 +31,13 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"",
     },
-    nativeLanguage:{
-        type:String,
-        default:"",
+    // NEW: Replace language fields with technologies
+    technologies: {
+        type: [String],
+        default: []
+        // No validation here - we'll handle it in controllers
     },
-    learningLanguage:{
-        type:String,
-        default:"",
-    },
-    location:{
-        type:String,
-        default:"",
-    },
-    isOnBoarded:{ // Note: Fixed the typo from "isOnBoarded" to match your structure
+    isOnBoarded:{
         type:Boolean,
         default:false,
     },
@@ -57,9 +49,8 @@ const userSchema = new mongoose.Schema({
     ]
 }, {timestamps:true});
 
-// Pre hook - only hash password if it exists and is modified
+// Keep your existing password hashing middleware
 userSchema.pre("save", async function(next){
-    // Skip password hashing if password is not present (Google OAuth users)
     if(!this.password || !this.isModified("password")) return next();
     
     try{
@@ -72,13 +63,10 @@ userSchema.pre("save", async function(next){
 })
 
 userSchema.methods.matchPassword = async function(enteredPassword){
-    // Return false if user doesn't have a password (Google OAuth only)
     if (!this.password) return false;
-    
     const isPasswordCorrect = await bcrypt.compare(enteredPassword, this.password);
     return isPasswordCorrect;
 };
 
 const User = mongoose.model("User", userSchema);
-
 export default User;

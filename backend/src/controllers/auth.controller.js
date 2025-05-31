@@ -40,6 +40,7 @@ export async function signup(req,res){
             fullName,
             password,
             profilePic:randomAvatar,
+            technologies: [] // Initialize empty technologies array
         })
 
         try{
@@ -101,7 +102,7 @@ export async function login(req,res){
         res.status(200).json({success:true, user});
         
     }catch(error){
-        console.log("Error in login controller", error.message); // Fixed typo: errorr -> error
+        console.log("Error in login controller", error.message);
         res.status(500).json({message:"Internal Server error"});
     }
 }
@@ -111,43 +112,62 @@ export function logout(req,res){
     res.status(200).json({success:true,message:"Logout Successful"});
 }
 
+// Updated onboard function for technologies
 export async function onboard(req, res){
     try{
         const userId = req.user._id;
+        const {fullName, bio, technologies, profilePic} = req.body;
 
-        const {fullName, bio, nativeLanguage, learningLanguage, location} = req.body;
-
-        if(!fullName || !bio || !nativeLanguage || !learningLanguage || !location){
+        // Validate required fields
+        if(!fullName || !technologies || !Array.isArray(technologies) || technologies.length === 0){
             return res.status(400).json({
-                message:"All fields required", // Fixed typo: ALl fileds -> All fields
+                message:"Required fields missing or invalid",
                 missingFields:[
                     !fullName && "fullName",
-                    !bio && "bio",
-                    !nativeLanguage && "nativeLanguage",
-                    !learningLanguage && "learningLanguage",
-                    !location && "location",
+                    (!technologies || !Array.isArray(technologies) || technologies.length === 0) && "technologies (at least 1 required)"
                 ].filter(Boolean)
             });
         }
 
-        const updatedUser = await User.findByIdAndUpdate(userId,{
-            ...req.body,
-            isOnBoarded: true,
-        },{new:true})
+        // Validate technologies array length (max 5)
+        if(technologies.length > 5) {
+            return res.status(400).json({
+                message: "Maximum 5 technologies allowed"
+            });
+        }
+
+        // Prepare update data
+        const updateData = {
+            fullName,
+            bio: bio || "", // bio is optional
+            technologies,
+            isOnBoarded: true
+        };
+
+        // Only update profilePic if provided
+        if(profilePic && profilePic.trim()) {
+            updateData.profilePic = profilePic;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            {new: true}
+        );
 
         if(!updatedUser){
-            return res.status(400).json({message: "User not found"});
+            return res.status(404).json({message: "User not found"});
         }
 
         try{
             await upsertStreamUser({
-            id: updatedUser._id.toString(),
-            name: updatedUser.fullName,
-            image: updatedUser.profilePic || "",
-            })
+                id: updatedUser._id.toString(),
+                name: updatedUser.fullName,
+                image: updatedUser.profilePic || "",
+            });
             console.log(`Stream user updated after onboarding for ${updatedUser.fullName}`);
         }catch(error){
-            console.log("Error updating Stream user during onboarding:",error.message);
+            console.log("Error updating Stream user during onboarding:", error.message);
         }
 
         res.status(200).json({success: true, user: updatedUser});
@@ -208,4 +228,26 @@ export const googleCallback = async (req, res) => {
             
         res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
+};
+
+
+// Add this new function
+export const getSocketToken = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    // Generate a short-lived token specifically for Socket.io
+    const socketToken = jwt.sign(
+      { userId: req.user._id },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '1h' } // Short-lived for Socket.io
+    );
+
+    res.status(200).json({ token: socketToken });
+  } catch (error) {
+    console.error('Error getting socket token:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };

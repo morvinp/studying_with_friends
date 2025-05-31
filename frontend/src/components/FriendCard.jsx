@@ -1,56 +1,76 @@
 import React from 'react'
-import {LANGUAGE_TO_FLAG} from "../constants/index.js"
 import { Link } from 'react-router'
+
 const FriendCard = ({friend}) => {
   return (
     <div className='card bg-base-200 hover:shadow-md transition-shadow'>
         <div className='card-body p-4'>
-            {/* USER INFO */}
             <div className="flex items-center gap-3 mb-3">
                 <div className="avatar size-12">
-                    <img src={friend.profilePic} alt={friend.fullName} />
+                    <img 
+                        src={friend.profilePic} 
+                        alt={friend.fullName}
+                        onError={(e) => {
+                            e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                        }}
+                    />
                 </div>
                 <h3 className="font-semibold truncate">{friend.fullName}</h3>
             </div>
-            {/* LANGUAGE BADGES */}
+            
+            {/* TECHNOLOGIES BADGES */}
             <div className="flex flex-wrap gap-1.5 mb-3">
-                <span className="badge badge-secondary text-xs">
-                    {getLanguageFlag(friend.nativeLanguage)}
-                    Native: {friend.nativeLanguage}
-                </span>
-                <span className="badge badge-outline text-xs">
-                    {getLanguageFlag(friend.learningLanguage)}
-                    Learning: {friend.learningLanguage}
-                </span>
-                </div>
+                {friend.technologies && friend.technologies.length > 0 ? (
+                    friend.technologies.map((tech, index) => (
+                        <span key={index} className="badge badge-primary text-xs">
+                            {getTechIcon(tech)}
+                            {tech.charAt(0).toUpperCase() + tech.slice(1)}
+                        </span>
+                    ))
+                ) : (
+                    <span className="badge badge-ghost text-xs">
+                        No technologies listed
+                    </span>
+                )}
+            </div>
 
-                <Link to={`/chat/${friend._id}`} className='btn btn-otuline w-full'>
-                    Message
-                </Link>
+            {friend.bio && (
+                <p className="text-xs text-base-content opacity-70 mb-3 line-clamp-2">
+                    {friend.bio}
+                </p>
+            )}
 
+            <Link to={`/chat/${friend._id}`} className='btn btn-outline w-full'>
+                Message
+            </Link>
         </div>
-
-      
     </div>
   )
 }
 
 export default FriendCard
 
-export function getLanguageFlag(language) {
-  if (!language) return null;
-  const langLower = language.toLowerCase();
-  const countryCode = LANGUAGE_TO_FLAG[langLower];
-
-  if (countryCode) {
-    return (
-      <img
-        src={`https://flagcdn.com/24x18/${countryCode}.png`}
-        alt={`${langLower} flag`}
-        className="h-3 mr-1 inline-block"
-      />
-    );
-  }
-
-  return null;
+export function getTechIcon(tech) {
+    const techIcons = {
+        'javascript': '⚡',
+        'typescript': '📘',
+        'react': '⚛️',
+        'vue.js': '💚',
+        'angular': '🅰️',
+        'svelte': '🧡',
+        'next.js': '▲',
+        'node.js': '🟢',
+        'python': '🐍',
+        'java': '☕',
+        'go': '🐹',
+        'rust': '🦀',
+        'docker': '🐳',
+        'mongodb': '🍃',
+        'postgresql': '🐘',
+        'aws': '☁️',
+        'git': '📚'
+    };
+    
+    const icon = techIcons[tech.toLowerCase()];
+    return icon ? <span className="mr-1">{icon}</span> : <span className="mr-1">💻</span>;
 }

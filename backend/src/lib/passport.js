@@ -2,10 +2,15 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js';
 
-// Use environment variable for callback URL
+// Fix: Use absolute URL for both development and production
 const callbackURL = process.env.NODE_ENV === "production" 
     ? `${process.env.BACKEND_URL}/api/auth/google/callback`
-    : "/api/auth/google/callback";
+    : `http://localhost:${process.env.PORT || 5001}/api/auth/google/callback`;
+
+// Add debug logging
+console.log("Google OAuth Callback URL:", callbackURL);
+console.log("Environment:", process.env.NODE_ENV);
+console.log("Port:", process.env.PORT);
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -36,6 +41,7 @@ passport.use(new GoogleStrategy({
             fullName: profile.displayName,
             email: profile.emails[0].value,
             profilePic: profile.photos[0].value,
+            technologies: [], // Add this line for new model structure
             isOnBoarded: false
         });
         
