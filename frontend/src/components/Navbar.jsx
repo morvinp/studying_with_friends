@@ -40,6 +40,17 @@ const Navbar = () => {
         logoutMutation();
     };
 
+    // Create a consistent fallback image based on user ID or email
+    const getFallbackImage = () => {
+        const userId = authUser?._id || authUser?.email || 'default';
+        const hash = userId.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+        const avatarNumber = Math.abs(hash % 100) + 1;
+        return `https://avatar.iran.liara.run/public/${avatarNumber}.png`;
+    };
+
     return (
         <nav className="bg-base-200 border-b border-base-300 sticky top-0 z-30 h-16 flex items-center">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,10 +86,10 @@ const Navbar = () => {
                             <div className="avatar">
                                 <div className="w-9 rounded-full">
                                     <img 
-                                        src={authUser?.profilePic} 
+                                        src={authUser?.profilePic || getFallbackImage()} 
                                         alt="User Avatar" 
                                         onError={(e) => {
-                                            e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                                            e.target.src = getFallbackImage();
                                         }}
                                     />
                                 </div>
@@ -96,10 +107,10 @@ const Navbar = () => {
                                             <div className="avatar">
                                                 <div className="w-10 rounded-full">
                                                     <img 
-                                                        src={authUser?.profilePic} 
+                                                        src={authUser?.profilePic || getFallbackImage()} 
                                                         alt="User Avatar"
                                                         onError={(e) => {
-                                                            e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                                                            e.target.src = getFallbackImage();
                                                         }}
                                                     />
                                                 </div>

@@ -18,6 +18,7 @@ import groupRoutes from "./routes/group.route.js";
 import messageRoutes from "./routes/message.route.js"; // Add message routes
 import { connectDB } from "./lib/db.js";
 import passport from "./lib/passport.js"; // Import passport configuration
+import aiRoutes from "./routes/ai.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -29,13 +30,15 @@ const server = createServer(app);
 // Initialize Socket.io
 initializeSocket(server);
 
-// CORS configuration
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
-        ? [process.env.FRONTEND_URL] // This will use your FRONTEND_URL
+        ? ["https://studying-with-friends.onrender.com"]
         : ["http://localhost:5173"],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 }));
+
 
 
 // Basic middleware
@@ -67,6 +70,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/messages", messageRoutes); // Add message routes
+app.use("/api/ai", aiRoutes);
 
 // Health check endpoint for Socket.io monitoring
 app.get("/api/health", (req, res) => {

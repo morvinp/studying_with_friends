@@ -123,3 +123,24 @@ export const getUserById = async (userId) => {
     return null;
   }
 };
+
+
+// Add these AI chat functions at the end of your api.js file
+
+export const chatWithAI = async (message, conversationId) => {
+  const response = await axiosInstance.post("/ai/chat", {
+    message,
+    conversationId
+  });
+  return response.data;
+};
+
+export const getAIConversations = async () => {
+  const response = await axiosInstance.get("/ai/conversations");
+  return response.data;
+};
+
+export const getAIConversation = async (conversationId) => {
+  const response = await axiosInstance.get(`/ai/conversation/${conversationId}`);
+  return response.data;
+};

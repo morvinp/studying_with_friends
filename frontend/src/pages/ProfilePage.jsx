@@ -22,6 +22,17 @@ const ProfilePage = () => {
     })
     const [selectedTech, setSelectedTech] = useState("")
 
+    // Create a consistent fallback image based on user ID or email
+    const getFallbackImage = () => {
+        const userId = authUser?._id || authUser?.email || 'default';
+        const hash = userId.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+        const avatarNumber = Math.abs(hash % 100) + 1;
+        return `https://avatar.iran.liara.run/public/${avatarNumber}.png`;
+    };
+
     // Update form state when authUser changes
     React.useEffect(() => {
         if (authUser) {
@@ -190,10 +201,10 @@ const ProfilePage = () => {
                                 <div className="avatar">
                                     <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full">
                                         <img
-                                            src={isEditing ? formState.profilePic : authUser.profilePic}
+                                            src={(isEditing ? formState.profilePic : authUser.profilePic) || getFallbackImage()}
                                             alt={authUser.fullName}
                                             onError={(e) => {
-                                                e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                                                e.target.src = getFallbackImage();
                                             }}
                                             className="w-full h-full object-cover"
                                         />

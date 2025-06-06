@@ -13,23 +13,28 @@
 │   │   │   -> auth.controller.js
 │   │   │   -> chat.controller.js
 │   │   │   -> group.controller.js
+│   │   │   -> message.controller.js
 │   │   │   -> user.controller.js
 │   │   │   📁 lib
 │   │   │   -> db.js
 │   │   │   -> passport.js
+│   │   │   -> socket.js
 │   │   │   -> stream.js
 │   │   │   📁 middleware
 │   │   │   -> auth.middleware.js
 │   │   │   📁 models
 │   │   │   -> FriendRequest.js
 │   │   │   -> Group.js
+│   │   │   -> Message.js
 │   │   │   -> User.js
 │   │   │   📁 routes
 │   │   │   -> auth.route.js
 │   │   │   -> chat.route.js
 │   │   │   -> group.route.js
+│   │   │   -> message.route.js
 │   │   │   -> oauth.route.js
 │   │   │   -> user.route.js
+│   │   │   📁 services
 │   📁 frontend
 │   -> eslint.config.js
 │   -> index.html
@@ -54,6 +59,7 @@
 │   │   │   -> stream-chat-icons-DWRBO47D.svg
 │   │   📁 public
 │   │   -> i.png
+│   │   -> study.png
 │   │   -> vite.svg
 │   │   📁 src
 │   │   -> App.jsx
@@ -61,6 +67,7 @@
 │   │   -> main.jsx
 │   │   │   📁 components
 │   │   │   -> CallButton.jsx
+│   │   │   -> CallChat.jsx
 │   │   │   -> CallContent.jsx
 │   │   │   -> ChatLoader.jsx
 │   │   │   -> FriendCard.jsx
@@ -75,14 +82,19 @@
 │   │   │   -> ThemeSelector.jsx
 │   │   │   📁 constants
 │   │   │   -> index.js
+│   │   │   📁 context
+│   │   │   -> SocketContext.jsx
 │   │   │   📁 hooks
 │   │   │   -> useAuthUser.js
+│   │   │   -> useCallChat.js
 │   │   │   -> useLogin.js
 │   │   │   -> useLogout.js
 │   │   │   -> useSignup.js
+│   │   │   -> useSocket.js
 │   │   │   📁 lib
 │   │   │   -> api.js
 │   │   │   -> axios.js
+│   │   │   -> streamClient.js
 │   │   │   -> utils.js
 │   │   │   📁 pages
 │   │   │   -> CallPage.jsx
@@ -97,3 +109,6 @@
 │   │   │   -> SignUpPage.jsx
 │   │   │   📁 store
 │   │   │   -> useThemeStore.js
+│   │   │   📁 utils
+│   │   │   -> audio.js
+│   │   │   -> mention.mp3

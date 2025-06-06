@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema({
     _id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: false // Make this optional for AI messages
     },
     name: String,
     image: String
@@ -20,7 +20,7 @@ const messageSchema = new mongoose.Schema({
   },
   chatType: {
     type: String,
-    enum: ['direct', 'group'],
+    enum: ['direct', 'group', 'ai'], // Add 'ai' type
     required: true
   },
   readBy: [{
@@ -32,13 +32,23 @@ const messageSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     }
-  }]
+  }],
+  // New fields for AI support
+  isAIMessage: {
+    type: Boolean,
+    default: false
+  },
+  conversationId: {
+    type: String,
+    required: false // For AI conversations
+  }
 }, {
   timestamps: true
 });
 
 // Index for efficient querying
 messageSchema.index({ chatId: 1, createdAt: -1 });
+messageSchema.index({ conversationId: 1, createdAt: 1 }); // New index for AI conversations
 
 const Message = mongoose.model('Message', messageSchema);
 export default Message;
