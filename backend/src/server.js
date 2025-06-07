@@ -5,7 +5,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import { createServer } from 'http';
 import { initializeSocket } from './lib/socket.js';
-
+import leaderboardRoutes from "./routes/leaderboard.route.js"; // Add this
 dotenv.config();
 
 import cors from "cors";
@@ -71,7 +71,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/messages", messageRoutes); // Add message routes
 app.use("/api/ai", aiRoutes);
-
+app.use("/api/leaderboard", leaderboardRoutes); // Add this
 // Health check endpoint for Socket.io monitoring
 app.get("/api/health", (req, res) => {
     res.json({ 

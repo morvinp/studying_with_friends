@@ -19,7 +19,8 @@ import Layout from './components/Layout.jsx'
 import { useThemeStore } from './store/useThemeStore.js'
 import GroupsPage from './pages/GroupsPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
-import { SocketProvider } from './context/SocketContext.jsx' // Add this import
+import { SocketProvider } from './context/SocketContext.jsx'
+import LeaderboardPage from "./pages/LeaderboardPage.jsx" // Add this
 
 const App = () => {
   // tanstack query crash course
@@ -80,6 +81,18 @@ const App = () => {
             <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
           )}
           />
+          
+          {/* Add Leaderboard Route */}
+          <Route path="/leaderboard" 
+          element={isAuthenticated && isOnBoarded?(
+            <Layout showSidebar>
+              <LeaderboardPage/>
+            </Layout>
+          ):(
+            <Navigate to={!isAuthenticated?"/login":"/onboarding"}/>
+          )}
+          />
+          
           <Route 
             path="/call/:id" 
             element={

@@ -1,3 +1,4 @@
+// backend/src/models/Message.js (updated to support both AI and bot messages)
 import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
@@ -9,7 +10,7 @@ const messageSchema = new mongoose.Schema({
     _id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: false // Make this optional for AI messages
+      required: false // Make this optional for AI and bot messages
     },
     name: String,
     image: String
@@ -20,7 +21,7 @@ const messageSchema = new mongoose.Schema({
   },
   chatType: {
     type: String,
-    enum: ['direct', 'group', 'ai'], // Add 'ai' type
+    enum: ['direct', 'group', 'ai'], // Keep your existing types
     required: true
   },
   readBy: [{
@@ -33,7 +34,7 @@ const messageSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  // New fields for AI support
+  // Existing AI support
   isAIMessage: {
     type: Boolean,
     default: false
@@ -41,6 +42,16 @@ const messageSchema = new mongoose.Schema({
   conversationId: {
     type: String,
     required: false // For AI conversations
+  },
+  // New fields for bot support (study bot, etc.)
+  isBot: {
+    type: Boolean,
+    default: false
+  },
+  botType: {
+    type: String,
+    enum: ['study', 'coding', 'general'],
+    default: null
   }
 }, {
   timestamps: true
@@ -48,7 +59,8 @@ const messageSchema = new mongoose.Schema({
 
 // Index for efficient querying
 messageSchema.index({ chatId: 1, createdAt: -1 });
-messageSchema.index({ conversationId: 1, createdAt: 1 }); // New index for AI conversations
+messageSchema.index({ conversationId: 1, createdAt: 1 }); // For AI conversations
+messageSchema.index({ isBot: 1, botType: 1 }); // For bot messages
 
 const Message = mongoose.model('Message', messageSchema);
 export default Message;

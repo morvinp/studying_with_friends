@@ -1,3 +1,4 @@
+// frontend/src/components/Sidebar.jsx (fix the path check)
 import React from 'react'
 import useAuthUser from '../hooks/useAuthUser'
 import { Link, useLocation } from 'react-router'
@@ -30,15 +31,15 @@ const Sidebar = () => {
             <span>Home</span>
             </Link>
 
-            {/* <Link
-            to="/friends"
+            <Link
+            to="/leaderboard"
             className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${
-                currentPath === "/firends" ? "btn-active" : ""
+                currentPath === "/leaderboard" ? "btn-active" : ""
             }`}
             >
             <UsersIcon className="size-5 text-base-content opacity-70" />
-            <span>Friends</span>
-            </Link> */}
+            <span>LeaderBoard</span>
+            </Link>
 
             <Link
             to="/notifications"

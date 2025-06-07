@@ -144,3 +144,44 @@ export const getAIConversation = async (conversationId) => {
   const response = await axiosInstance.get(`/ai/conversation/${conversationId}`);
   return response.data;
 };
+export const getOverallLeaderboard = async () => {
+  try {
+    const response = await fetch('/api/leaderboard/overall', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    return data.leaderboard;
+  } catch (error) {
+    console.error('Error fetching overall leaderboard:', error);
+    throw error;
+  }
+};
+
+export const getWeeklyLeaderboard = async () => {
+  try {
+    const response = await fetch('/api/leaderboard/weekly', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    return data.leaderboard;
+  } catch (error) {
+    console.error('Error fetching weekly leaderboard:', error);
+    throw error;
+  }
+};
+
+export const getMyStudyStats = async () => {
+  try {
+    const response = await fetch('/api/leaderboard/my-stats', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    return data;
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    throw error;
+  }
+};
