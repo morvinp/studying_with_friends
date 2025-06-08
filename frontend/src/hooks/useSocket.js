@@ -29,8 +29,8 @@ const useSocket = (authUser) => {
 
         console.log('useSocket: Socket token obtained');
 
-        // const socketUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
-        const socketUrl = 'https://studying-with-friends.onrender.com/';
+        const socketUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+        // const socketUrl = 'https://studying-with-friends.onrender.com/';
         console.log('useSocket: Connecting to:', socketUrl);
 
         const newSocket = io(socketUrl, {
