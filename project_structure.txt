@@ -10,6 +10,7 @@
 │   │   📁 src
 │   │   -> server.js
 │   │   │   📁 controllers
+│   │   │   -> ai.controller.js
 │   │   │   -> auth.controller.js
 │   │   │   -> chat.controller.js
 │   │   │   -> group.controller.js
@@ -26,11 +27,14 @@
 │   │   │   -> FriendRequest.js
 │   │   │   -> Group.js
 │   │   │   -> Message.js
+│   │   │   -> StudySession.js
 │   │   │   -> User.js
 │   │   │   📁 routes
+│   │   │   -> ai.route.js
 │   │   │   -> auth.route.js
 │   │   │   -> chat.route.js
 │   │   │   -> group.route.js
+│   │   │   -> leaderboard.route.js
 │   │   │   -> message.route.js
 │   │   │   -> oauth.route.js
 │   │   │   -> user.route.js
@@ -66,6 +70,8 @@
 │   │   -> index.css
 │   │   -> main.jsx
 │   │   │   📁 components
+│   │   │   -> AIChatModal.jsx
+│   │   │   -> AIFloatingButton.jsx
 │   │   │   -> CallButton.jsx
 │   │   │   -> CallChat.jsx
 │   │   │   -> CallContent.jsx
@@ -101,6 +107,7 @@
 │   │   │   -> ChatPage.jsx
 │   │   │   -> GroupsPage.jsx
 │   │   │   -> HomePage.jsx
+│   │   │   -> LeaderboardPage.jsx
 │   │   │   -> LoginPage.jsx
 │   │   │   -> NotificationsPage.jsx
 │   │   │   -> OAuthCallbackPage.jsx

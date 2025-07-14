@@ -1,8 +1,8 @@
-// frontend/src/pages/LeaderboardPage.jsx (updated to match your homepage style)
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getOverallLeaderboard, getWeeklyLeaderboard, getMyStudyStats } from '../lib/api';
-import { TrophyIcon, ClockIcon, BookOpenIcon, TargetIcon } from 'lucide-react';
+import { TrophyIcon, ClockIcon, BookOpenIcon, TargetIcon, BarChart3 } from 'lucide-react';
+import PowerBIPanel from '../components/PowerBIPanel';
 
 const LeaderboardPage = () => {
   const [activeTab, setActiveTab] = useState('overall');
@@ -64,7 +64,7 @@ const LeaderboardPage = () => {
         </div>
 
         {/* My Stats Section */}
-        {myStats && (
+        {myStats && activeTab !== 'powerbi' && (
           <section>
             <div className="mb-6">
               <h3 className="text-xl font-bold tracking-tight mb-4">📈 Your Study Stats</h3>
@@ -102,10 +102,12 @@ const LeaderboardPage = () => {
           </section>
         )}
 
-        {/* Leaderboard Section */}
+        {/* Main Content with Tabs */}
         <section>
           <div className="mb-6">
-            <h3 className="text-xl font-bold tracking-tight mb-4">🏆 Rankings</h3>
+            <h3 className="text-xl font-bold tracking-tight mb-4">
+              {activeTab === 'powerbi' ? '📊 PowerBI Analytics' : '🏆 Rankings'}
+            </h3>
             
             {/* Tabs */}
             <div className="tabs tabs-boxed w-fit">
@@ -121,74 +123,87 @@ const LeaderboardPage = () => {
               >
                 📅 This Week
               </button>
+              <button
+                onClick={() => setActiveTab('powerbi')}
+                className={`tab ${activeTab === 'powerbi' ? 'tab-active' : ''}`}
+              >
+                📊 PowerBI Analytics
+              </button>
             </div>
           </div>
 
-          {/* Leaderboard Content */}
-          {isLoading ? (
-            <div className='flex justify-center py-12'>
-              <span className='loading loading-spinner loading-lg'/>
-            </div>
-          ) : currentLeaderboard && currentLeaderboard.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4">
-              {currentLeaderboard.map((user, index) => (
-                <div
-                  key={user._id}
-                  className={`card bg-base-200 hover:shadow-lg transition-all duration-300 ${
-                    index < 3 ? 'border-2 border-warning' : ''
-                  }`}
-                >
-                  <div className="card-body p-5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="text-3xl font-bold min-w-[3rem]">
-                          {getRankIcon(index + 1)}
-                        </div>
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img
-                              src={user.userImage || '/api/placeholder/40/40'}
-                              alt={user.userName}
-                              onError={(e) => {
-                                e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
-                              }}
-                            />
+          {/* Tab Content */}
+          {activeTab === 'powerbi' ? (
+            <PowerBIPanel />
+          ) : (
+            <>
+              {/* Leaderboard Content */}
+              {isLoading ? (
+                <div className='flex justify-center py-12'>
+                  <span className='loading loading-spinner loading-lg'/>
+                </div>
+              ) : currentLeaderboard && currentLeaderboard.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {currentLeaderboard.map((user, index) => (
+                    <div
+                      key={user._id}
+                      className={`card bg-base-200 hover:shadow-lg transition-all duration-300 ${
+                        index < 3 ? 'border-2 border-warning' : ''
+                      }`}
+                    >
+                      <div className="card-body p-5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="text-3xl font-bold min-w-[3rem]">
+                              {getRankIcon(index + 1)}
+                            </div>
+                            <div className="avatar">
+                              <div className="w-12 rounded-full">
+                                <img
+                                  src={user.userImage || '/api/placeholder/40/40'}
+                                  alt={user.userName}
+                                  onError={(e) => {
+                                    e.target.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random()*100)+1}.png`;
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-lg">{user.userName}</div>
+                              <div className="text-sm opacity-70">
+                                {user.totalSessions} sessions • Avg: {formatTime(user.avgSessionDuration)}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-primary">
+                              {formatTime(user.totalStudyTime)}
+                            </div>
+                            {user.lastStudyDate && (
+                              <div className="text-xs opacity-70">
+                                Last: {new Date(user.lastStudyDate).toLocaleDateString()}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div>
-                          <div className="font-semibold text-lg">{user.userName}</div>
-                          <div className="text-sm opacity-70">
-                            {user.totalSessions} sessions • Avg: {formatTime(user.avgSessionDuration)}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
-                          {formatTime(user.totalStudyTime)}
-                        </div>
-                        {user.lastStudyDate && (
-                          <div className="text-xs opacity-70">
-                            Last: {new Date(user.lastStudyDate).toLocaleDateString()}
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="card bg-base-200 p-6 text-center">
-              <h3 className="font-semibold text-lg mb-2">No study sessions yet</h3>
-              <p className="opacity-70">
-                📚 Start studying to appear on the leaderboard!
-              </p>
-            </div>
+              ) : (
+                <div className="card bg-base-200 p-6 text-center">
+                  <h3 className="font-semibold text-lg mb-2">No study sessions yet</h3>
+                  <p className="opacity-70">
+                    📚 Start studying to appear on the leaderboard!
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </section>
 
-        {/* Recent Sessions */}
-        {myStats && myStats.recentSessions && myStats.recentSessions.length > 0 && (
+        {/* Recent Sessions - Only show when not on PowerBI tab */}
+        {activeTab !== 'powerbi' && myStats && myStats.recentSessions && myStats.recentSessions.length > 0 && (
           <section>
             <div className="mb-6">
               <h3 className="text-xl font-bold tracking-tight">📝 Your Recent Sessions</h3>
