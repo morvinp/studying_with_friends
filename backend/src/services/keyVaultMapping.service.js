@@ -1,7 +1,7 @@
 // Complete mapping to match your actual environment variables
 export const keyVaultMapping = {
   // Basic Configuration
-  'PORT': 'PORT',
+  // 'PORT': 'PORT',
   'NODEENV': 'NODE_ENV',
   
   // Database
@@ -34,8 +34,8 @@ export const keyVaultMapping = {
   'GOOGLEAIAPIKEY': 'GOOGLE_AI_API_KEY',
   
   // Azure Configuration
-  'USEKEYVAULT': 'USE_KEY_VAULT',
-  'AZUREKEYVAULTURL': 'AZURE_KEY_VAULT_URL',
+  // 'USEKEYVAULT': 'USE_KEY_VAULT',
+  // 'AZUREKEYVAULTURL': 'AZURE_KEY_VAULT_URL',
   
   // Frontend Environment Variables (VITE)
   'VITESTREAMAPIKEY': 'VITE_STREAM_API_KEY',

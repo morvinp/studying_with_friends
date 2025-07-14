@@ -1,0 +1,69 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Get secrets from Key Vault
+      id: keyvault
+      run: |
+        echo "Getting secrets from Azure Key Vault..."
+        
+        # Get all your secrets
+        MONGO_URI=$(az keyvault secret show --vault-name swf-keyvau --name MONGOURI --query value -o tsv)
+        JWT_SECRET_KEY=$(az keyvault secret show --vault-name swf-keyvau --name JWTSECRETKEY --query value -o tsv)
+        SESSION_SECRET=$(az keyvault secret show --vault-name swf-keyvau --name SESSIONSECRET --query value -o tsv)
+        GOOGLE_CLIENT_ID=$(az keyvault secret show --vault-name swf-keyvau --name GOOGLECLIENTID --query value -o tsv)
+        GOOGLE_CLIENT_SECRET=$(az keyvault secret show --vault-name swf-keyvau --name GOOGLECLIENTSECRET --query value -o tsv)
+        STREAM_API_KEY=$(az keyvault secret show --vault-name swf-keyvau --name STREAMAPIKEY --query value -o tsv)
+        STREAM_API_SECRET=$(az keyvault secret show --vault-name swf-keyvau --name STREAMAPISECRET --query value -o tsv)
+        GOOGLE_AI_API_KEY=$(az keyvault secret show --vault-name swf-keyvau --name GOOGLEAIAPIKEY --query value -o tsv)
+        
+        # Set as outputs (masked for security)
+        echo "::add-mask::$MONGO_URI"
+        echo "::add-mask::$JWT_SECRET_KEY"
+        echo "::add-mask::$SESSION_SECRET"
+        echo "::add-mask::$GOOGLE_CLIENT_ID"
+        echo "::add-mask::$GOOGLE_CLIENT_SECRET"
+        echo "::add-mask::$STREAM_API_KEY"
+        echo "::add-mask::$STREAM_API_SECRET"
+        echo "::add-mask::$GOOGLE_AI_API_KEY"
+        
+        echo "MONGO_URI=$MONGO_URI" >> $GITHUB_OUTPUT
+        echo "JWT_SECRET_KEY=$JWT_SECRET_KEY" >> $GITHUB_OUTPUT
+        echo "SESSION_SECRET=$SESSION_SECRET" >> $GITHUB_OUTPUT
+        echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> $GITHUB_OUTPUT
+        echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> $GITHUB_OUTPUT
+        echo "STREAM_API_KEY=$STREAM_API_KEY" >> $GITHUB_OUTPUT
+        echo "STREAM_API_SECRET=$STREAM_API_SECRET" >> $GITHUB_OUTPUT
+        echo "GOOGLE_AI_API_KEY=$GOOGLE_AI_API_KEY" >> $GITHUB_OUTPUT
+    
+    - name: Deploy Backend
+      run: |
+        echo "Backend deployment will go here"
+        echo "Secrets loaded successfully!"
+    
+    - name: Deploy Frontend  
+      run: |
+        echo "Frontend deployment will go here"
+        echo "Ready for deployment!"
